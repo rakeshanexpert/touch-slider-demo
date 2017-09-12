@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>demo</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+.mainSliderSec{-webkit-transition: -webkit-transform .3s ease-out;  transition: -webkit-transform .3s ease-out;
+    transition: transform .3s ease-out;  transition: transform .3s ease-out,-webkit-transform .3s ease-out;height: 100%;  left: 0;  position: absolute;
+    top: 0;  width: 100%; z-index:99}
+
+.side-nav-wrapper { width: 24px;  height: 38px; position: absolute;  top: 50%; -webkit-transform: translateY(-50%);  -ms-transform: translateY(-50%);
+    transform: translateY(-50%); z-index: 20;}
+.side-nav-wrapper.wrapper-left { left: 0; background:url(left.png) no-repeat; display: none}
+.side-nav-wrapper.wrapper-right { right: 0;background:url(right.png) no-repeat}
+
+.innerSecMid{position: absolute;  z-index: 1;  top: 0;  left: 0; background-color: transparent;  background-size: cover;  background-position: 50%;
+	width: 100%;  height: 100%; background-image:url(1.jpg);-webkit-transition: -webkit-transform .3s ease-out;
+    transition: -webkit-transform .3s ease-out; transition: transform .3s ease-out; transition: transform .3s ease-out,-webkit-transform .3s ease-out; transition:1s}
+
+#photoSlider{ overflow: hidden}
+#photoSlider ul{ overflow: hidden;-webkit-transition: -webkit-transform .3s ease-out;
+    transition: -webkit-transform .3s ease-out; transition: transform .3s ease-out; transition: transform .3s ease-out,-webkit-transform .3s ease-out; transition:1s}
+#photoSlider li{ list-style: none; float: left}
+#photoSlider li img{ width:100%; height:100%}
+#photoSlider li{ position: absolute;  top:0; left:0; height:100%; width:100%;-webkit-transition: -webkit-transform .3s ease-out;transform: scale(0.9);
+    transition: -webkit-transform .3s ease-out; transition: transform .3s ease-out; transition: transform .3s ease-out,-webkit-transform .3s ease-out; transition:1s}
+#photoSlider li:first-child{transform: scale(1);}
+.moreBtn{ position: absolute; bottom:-4px; left:50%; transform:translateX(-50%); cursor: pointer}
+.moreBtn{ height: auto; width: auto}
+
+/*Midd Content Section*/
+.maintContentSection{ float: left; width:100%; font: 400 16px/22px Avenir,Noto Sans,Droid,Arial,sans-serif; position: absolute;background-color: #fff;
+ pointer-events: auto; bottom: 0;  top: 0; left: 0; right: 0; z-index:9; padding:10px 15px; box-sizing: border-box; display: none}
+.adSection{ text-align: center}
+.contentClose{ position: absolute; right:10px; top:10px; background:#fff; border:1px solid #888282; color:#c00; font-size:18px; font-weight: bold; height:30px; 
+width:30px; display: inline-block; border-radius:100%; text-align: center; line-height:30px; cursor: pointer}
+
+
+
+.animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+@keyframes slideOutUp {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+.slideOutUp {
+  animation-name: slideOutUp;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translate3d(0, -100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.slideInDown {
+  animation-name: slideInDown;
+}
+
+
+
+
+
+</style>
+
+<script>
+jQuery(document).ready(function($) {
+    var counter = 0;
+    var slideCount = $('#photoSlider ul li');
+
+//Set Indexing for all list group
+	$($("#photoSlider li").get().reverse()).each(function(k){
+		$(this).css('z-index',k);
+		
+	})
+	
+//Slider js
+    function next(){
+       if (counter >= slideCount.length-1) {
+		   $(this).hide();
+		  
+       }else{
+		  $("#photoSlider li").eq(counter).css('transform','translate(-100vw , 0)');
+		  $("#photoSlider li").eq(counter+1).css('transform','scale(1)');
+			  $(".wrapper-left").show();
+			   counter++;
+		 }
+		 
+    }
+	
+	
+	 function prev(){
+       if (counter >= 1) {
+         $("#photoSlider li").eq(counter-1).css('transform','translate(0vw, 0px)'); 
+		 $("#photoSlider li").eq(counter+1).css('transform','scale(0.9)');
+		   $(".wrapper-right").show();
+		   counter--;  
+		   
+		}else{
+		    $(this).hide();
+		
+		}
+		
+
+    }
+	
+	
+	$(".wrapper-right").on('click',next)
+	$(".wrapper-left").on('click',prev)
+	
+//===========For More Btn Story===========
+  $(".moreBtn").click(function(){
+	 $(".mainSliderSec").addClass("animated slideOutUp").one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function() {
+            $(this).removeClass("animated slideOutUp").hide();
+        })
+		
+	 $(".maintContentSection").fadeIn()
+  })
+
+//Close Content======
+
+$(".contentClose").click(function(){
+	 $(".mainSliderSec").show().addClass("animated slideInDown").one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',function() {
+            $(this).removeClass("animated slideInDown")
+	 })
+	 $(".maintContentSection").fadeOut(1000);
+	
+})
+
+	
+//Swiper
+$("#photoSlider").on("touchstart", function(event){
+        var xClick = event.originalEvent.touches[0].pageX;
+      $(this).one("touchmove", function(event){
+        var xMove = event.originalEvent.touches[0].pageX;
+        if( Math.floor(xClick - xMove) > 5 ){
+             next()
+        }
+        else if( Math.floor(xClick - xMove) < -5 ){
+           prev()
+        }
+    });
+    $("#photoSlider").on("touchend", function(){
+            $(this).off("touchmove");
+    });
+	
+	
+});
+	
+	
+	
+});
+  </script>
+
+
+</head>
+
+<body>
+	<div class="mainSliderSec">
+    	<div id="photoSlider">
+        	<ul>
+            	<li>
+                	<img src="1.jpg" /><span class="moreBtn"><img src="more.png" alt="" /></span>
+                </li>
+                <li>
+                	<img src="2.jpg" /><span class="moreBtn"><img src="more.png" alt="" /></span>
+                </li>
+                <li>
+                	<img src="3.jpg" /><span class="moreBtn"><img src="more.png" alt="" /></span>
+                </li>
+               	<li>
+                	<img src="4.jpg" /><span class="moreBtn"><img src="more.png" alt="" /></span>
+                </li>
+                <li>
+                	<img src="5.jpg" /><span class="moreBtn"><img src="more.png" alt="" /></span>
+                </li>
+            </ul>
+        	
+        </div>
+        
+        <div class="side-nav-wrapper wrapper-left"></div>
+        <div class="side-nav-wrapper wrapper-right"></div>
+    </div>
+
+	<div class="maintContentSection">
+    	<span class="contentClose">X</span>
+        
+    	<p>A job interview is a weird experience. You never know what you're walking into. Will the interview be a lively, stimulating discussion about meaty topics -- a conversation that will inspire you?</p>
+        <p>Or, will it be a hopeless slog through a list of idiotic questions asked of you by a not-very-smart person who also has a chip on their shoulder?</p>
+        <p>I understand completely why some job applicants become cynical. They can start to think "I have a job interview tomorrow, but it's probably a waste of my time." They don't take the interview seriously. They don't prepare for it. They just show up and hope for the best.</p>
+        
+        <div class="adSection">
+        	<img src="ad.jpg" alt="" />
+        </div>
+        
+        <p>A job interview is a weird experience. You never know what you're walking into. Will the interview be a lively, stimulating discussion about meaty topics -- a conversation that will inspire you?</p>
+        <p>Or, will it be a hopeless slog through a list of idiotic questions asked of you by a not-very-smart person who also has a chip on their shoulder?</p>
+        <p>I understand completely why some job applicants become cynical. They can start to think "I have a job interview tomorrow, but it's probably a waste of my time." They don't take the interview seriously. They don't prepare for it. They just show up and hope for the best.</p>
+         <p>A job interview is a weird experience. You never know what you're walking into. Will the interview be a lively, stimulating discussion about meaty topics -- a conversation that will inspire you?</p>
+    
+    </div>
+
+
+</body>
+</html>
